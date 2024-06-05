@@ -1,0 +1,307 @@
+*&---------------------------------------------------------------------*
+*& Report ZTRUPEN_CG_19THOCT_B3_SALVIDA
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZTRUPEN_CG_19THOCT_B3_SALVIDA.
+
+*# 1 SIMPLE TABLE CALLING
+
+*data(i_obj) = CL_SALV_GUI_TABLE_IDA=>create(
+*                iv_table_name         = 'VBAK'     "CS_   OR TEXT-0001.
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+*
+*
+*I_OBJ->FULLSCREEN( )->display( ).
+
+
+*# 2 CDS VIEW CALLING
+
+*data(i_obj) = CL_SALV_GUI_TABLE_IDA=>create_for_cds_view(
+*                iv_cds_view_name      = 'ZTRUPEN_19TH_OCTB3_CDS1'
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+**              catch cx_salv_function_not_supported. " Funcionality is not supported
+*
+*I_OBJ->FULLSCREEN( )->display( ).
+
+
+
+**# 3 CDS VIEW CALLING WITH PARAMETER
+
+*PARAMETERS P_SONO TYPE VBELN_VA..
+*
+*data(i_SALV) = CL_SALV_GUI_TABLE_IDA=>create_for_cds_view(
+*                iv_cds_view_name      = 'ZTRUPEN_19TH_OCTB3_CDS_PARA'
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+**              catch cx_salv_function_not_supported. " Funcionality is not supported
+*I_SALV->set_view_parameters( it_parameters = VALUE #( ( NAME = 'P_VBELN'  VALUE = P_SONO ) ) ).
+*I_SALV->FULLSCREEN( )->display( ).
+
+**# 4 CDS VIEW CALLING WITH RANGE OF PARAMETERS
+*PARAMETERS :P_SONO_L TYPE VBELN_VA,
+                        P_SONO_H TYPE VBELN_VA.
+*data(i_SALV) = CL_SALV_GUI_TABLE_IDA=>create_for_cds_view(
+*                iv_cds_view_name      = 'ZTRUPEN_19TH_OCTB3_PARA_RNG'
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+**              catch cx_salv_function_not_supported. " Funcionality is not supported
+*I_SALV->set_view_parameters( it_parameters = VALUE #( ( NAME = 'P_VBELN1'  VALUE = P_SONO_L )
+*                                                      ( NAME = 'P_VBELN2'  VALUE = P_SONO_H ) ) ).
+*I_SALV->FULLSCREEN( )->display( ).
+
+
+
+*# 5 CDS VIEW CALLING WITH RANGE OF SELECT-OPTIONS
+*DATA LV_VBELN TYPE VBELN_VA.
+*
+*SELECT-OPTIONS S_SONO FOR LV_VBELN.
+*data(i_SALV) = CL_SALV_GUI_TABLE_IDA=>create_for_cds_view(
+*                iv_cds_view_name      = 'ZTRUPEN_19TH_OCTB3_PARA_RNG'
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+**              catch cx_salv_function_not_supported. " Funcionality is not supported
+*I_SALV->set_view_parameters( it_parameters = VALUE #( ( NAME = 'P_VBELN1'  VALUE = S_SONO-LOW )
+                                                                                           ( NAME = 'P_VBELN2'  VALUE = S_SONO-HIGH ) ) ).
+*I_SALV->FULLSCREEN( )->display( ).
+
+**# 6
+
+
+*DATA LV_VBELN TYPE VBELN_VA.
+*
+*SELECT-OPTIONS S_VBELN FOR LV_VBELN.
+
+*DATA I_RANGE_COLLECTOR TYPE REF TO CL_SALV_RANGE_TAB_COLLECTOR.
+*CREATE OBJECT I_RANGE_COLLECTOR.
+
+*data(i_SALV) = CL_SALV_GUI_TABLE_IDA=>create_for_cds_view(
+*                iv_cds_view_name      = 'ZTRUPEN_19TH_OCTB3_CDS1'
+**                io_gui_container      =
+**                io_calc_field_handler =
+*              ).
+**              catch cx_salv_db_connection.          " Error connecting to database
+**              catch cx_salv_db_table_not_supported. " DB table / view is not supported
+**              catch cx_salv_ida_contract_violation. " IDA API contract violated by caller
+**              catch cx_salv_function_not_supported. " Funcionality is not supported
+*
+*
+*
+*I_RANGE_COLLECTOR->add_ranges_for_name(
+*  exporting
+*    iv_name   = 'SO_ORDNO'       "'VBELN'
+*    it_ranges = S_VBELN[] " 1 TO 100  " LOW HOGH SIGN OPTIONS
+*).
+*
+*DATA I_COLLECTED_RANGES  TYPE IF_SALV_SERVICE_TYPES=>YT_NAMED_RANGES.
+*
+*I_RANGE_COLLECTOR->get_collected_ranges(
+*  importing
+*    et_named_ranges =  I_COLLECTED_RANGES
+*).
+*
+*i_SALV->set_select_options(
+*  exporting
+*    it_ranges    = I_COLLECTED_RANGES
+**    io_condition =
+*).
+**catch cx_salv_ida_associate_invalid. " Superclass for all dynamic ALV IDA exceptions
+**catch cx_salv_db_connection.         " Error connecting to database
+**catch cx_salv_ida_condition_invalid. " Superclass for all dynamic ALV IDA exceptions
+**catch cx_salv_ida_unknown_name.      " Unknown name: FieldName,DataElementName,...
+*
+*I_SALV->FULLSCREEN( )->display( ).
+
+
+
+***# 7  ET_FIELD_HEADER_TEXTS
+
+*CL_SALV_GUI_TABLE_IDA=>CREATE_FOR_CDS_VIEW(
+*  EXPORTING
+*    IV_CDS_VIEW_NAME               = 'ZTRUPEN_19TH_OCTB3_CDS1'
+**    io_gui_container               =
+**    io_calc_field_handler          =
+*  RECEIVING
+*    RO_ALV_GUI_TABLE_IDA           = DATA(O_ALV)
+*).
+*
+**  CATCH cx_salv_db_connection.    "
+**  CATCH cx_salv_db_table_not_supported.    "
+**  CATCH cx_salv_ida_contract_violation.    "
+**  CATCH cx_salv_function_not_supported.    " _
+*
+*DATA(O_FUL_SCRN) = O_ALV->FULLSCREEN( ).
+**  CATCH cx_salv_ida_contract_violation.    "
+*
+*DATA(O_FCAT) = O_ALV->FIELD_CATALOG( ).
+***
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  =  'SO_ORDNO'     "'VBELN'
+*    IV_HEADER_TEXT                 = 'SALES ORD NO'
+*
+*    IV_TOOLTIP_TEXT                = 'This is SALES ORD'
+*    IV_TOOLTIP_TEXT_LONG           = 'This is SALES ORD FIELD'
+*).
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  =  'SO_DATE'        " 'ERDAT'
+*    IV_HEADER_TEXT                 = 'Sales Order Date'
+**     IV_TOOLTIP_TEXT                =
+**     IV_TOOLTIP_TEXT_LONG           =
+*).
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  = 'SO_TIME'   "'ERZET'
+*    IV_HEADER_TEXT                 = 'Sales Order Entry time').
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  = 'AUART'
+*    IV_HEADER_TEXT                 = 'Document Category').
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  = 'AUDAT'
+*    IV_HEADER_TEXT                 = 'Document Category').
+*
+*
+*O_FCAT->SET_FIELD_HEADER_TEXTS(
+*  EXPORTING
+*    IV_FIELD_NAME                  = 'NETWR'
+*    IV_HEADER_TEXT                 = 'Net Value of the Sales Order').
+*
+***   CATCH CX_SALV_IDA_UNKNOWN_NAME.    "
+***   CATCH CX_SALV_CALL_AFTER_1ST_DISPLAY.    "
+**
+*
+*O_FUL_SCRN->DISPLAY( ).
+*
+
+***# 8 "Disabling sorting ascending and descending for priority field right click)
+
+*CL_SALV_GUI_TABLE_IDA=>CREATE_FOR_CDS_VIEW(
+*  EXPORTING
+*    IV_CDS_VIEW_NAME               = 'ZTRUPEN_19TH_OCTB3_CDS1'
+*  RECEIVING
+*    RO_ALV_GUI_TABLE_IDA           = DATA(O_ALV)
+*).
+*
+*DATA(O_FUL_SCRN) = O_ALV->FULLSCREEN( ).
+*
+*DATA(O_FCAT) = O_ALV->FIELD_CATALOG( ).
+*
+*O_FCAT->DISABLE_AGGREGATION( IV_FIELD_NAME = 'NETWR' ).
+*
+**
+*"Disabling sortingascending and descending for priority field right click)
+*
+*O_FCAT->DISABLE_SORT( IV_FIELD_NAME = 'SO_ORDNO').
+*O_FCAT->DISABLE_FILTER( IV_FIELD_NAME = 'AUART') .
+*
+*
+*"title
+*O_ALV->DISPLAY_OPTIONS( )->SET_TITLE( IV_TITLE = 'Sales Order Info' ).
+*O_FUL_SCRN->DISPLAY( ).
+
+
+**### 9 SALV IDA ADD_BUTTON
+*
+*CL_SALV_GUI_TABLE_IDA=>CREATE_FOR_CDS_VIEW(
+*  EXPORTING
+*    IV_CDS_VIEW_NAME               = 'ZTRUPEN_19TH_OCTB3_CDS1'
+**    io_gui_container               =
+**    io_calc_field_handler          =
+*  RECEIVING
+*    RO_ALV_GUI_TABLE_IDA           = DATA(O_ALV)
+*).
+*
+*O_ALV->TOOLBAR( )->ADD_BUTTON(
+*  EXPORTING
+*    IV_FCODE         = 'DETAIL'
+*    IV_TEXT          = 'SALES_INFO_PT'
+*    IV_QUICKINFO     = 'Sales Order Details'
+*    IV_BEFORE_STANDARD_FUNCTIONS = ABAP_FALSE
+*).
+*
+*DATA(O_FUL_SCRN) = O_ALV->FULLSCREEN( ).
+*O_FUL_SCRN->DISPLAY( ).
+
+
+*CREATE_FOR_CDS_VIEW is a static method of the class CL_SALV_GUI_TABLE_IDA
+*If the parameters of the create method are observed, it is seen
+*that it has a Returning parameter RO_ALV_GUI_TABLE_IDA
+*RO_ALV_GUI_TABLE_IDA IS OF TYPE IF_SALV_GUI_TABLE_IDA.
+
+*IF_SALV_GUI_TABLE_IDA IS AN INTERFACE WHICH HAS THE METHOD DISPLAY OPTIONS
+* DISPLAY OPTIONS RETURNS AN WITH THE NAME RO_DISPLAY_OPTIONS
+* RO_DISPLAY_OPTIONS IS OF TYPE IF_SALV_GUI_TABLE_DISPLAY_OPT
+*IF_SALV_GUI_TABLE_DISPLAY_OPT IS AN INTERFACE WHICH HAS METHOD SET_TITLE
+* IT ALSO HAS THE METHOD ENABLE_ALTERNATING_ROW_PATTERN
+
+*IF_SALV_GUI_TABLE_IDA IS AN INTERFACE WHICH HAS THE METHOD FULLSCREEN.
+
+*METHOD FULLSCREEN RETURNS OBJECT OF TYPE IF_SALV_GUI_FULLSCREEN_IDA
+
+*IF_SALV_GUI_TABLE_IDA IS AN INTERFACE WHICH HAS THE METHOD FIELD_CATALOG.
+*METHOD FIELD_CATALOG RETURNS AN OBJECT OF WITH THE NAME RO_FIELD_CATALOG
+*RO_FIELD_CATALOG IS OF TYPE IF_SALV_GUI_FIELD_CATALOG_IDA
+*i.e METHOD FIELD_CATALOG RETURNS AN OBJECT OF TYPE IF_SALV_GUI_FIELD_CATALOG_IDA
+* IF_SALV_GUI_FIELD_CATALOG_IDA HAS THE METHOD GET_AVAILABLE_FIELDS
+* IF_SALV_GUI_FIELD_CATALOG_IDA HAS THE METHOD SET_AVAILABLE_FIELDS
+*IF_SALV_GUI_FULLSCREEN_IDA IS AN INTERFACE WHICH HAS THE METHOD DISPLAY.
+
+***# 10
+*
+*CL_SALV_GUI_TABLE_IDA=>CREATE_FOR_CDS_VIEW(
+*  EXPORTING
+*    IV_CDS_VIEW_NAME               = 'ZTRUPEN_19TH_OCTB3_CDS1'
+*  RECEIVING
+*    RO_ALV_GUI_TABLE_IDA           = DATA(O_ALV)
+*).
+**
+**To set title
+*O_ALV->DISPLAY_OPTIONS( )->SET_TITLE( IV_TITLE = 'List of sales' ).
+*
+*O_ALV->DISPLAY_OPTIONS( )->ENABLE_ALTERNATING_ROW_PATTERN( )."Zebra layout
+*
+**O_ALV->DEFAULT_LAYOUT( )->SET_SORT_ORDER(
+**                          VALUE #( ( FIELD_NAME = 'SO_ORDNO'  ) ) ).
+*
+*O_ALV->DEFAULT_LAYOUT( )->SET_SORT_ORDER(
+*                          VALUE #( ( FIELD_NAME = 'SO_ORDNO' DESCENDING  = ABAP_TRUE  ) ) ).
+*
+*
+***"To remove print and aggregation button from the custom alv toolbar
+***
+**
+*O_ALV->STANDARD_FUNCTIONS( )->SET_PRINT_ACTIVE( IV_ACTIVE = ABAP_FALSE ).  " 'X' SPACE
+*O_ALV->STANDARD_FUNCTIONS( )->SET_AGGREGATION_ACTIVE( IV_ACTIVE = ABAP_FALSE ).
+*
+*DATA(O_FUL_SCRN) = O_ALV->FULLSCREEN( ).
+*O_FUL_SCRN->DISPLAY( ).
